@@ -37,6 +37,11 @@ from .runtime import ndarray as nd
 # tvm.error
 from . import error
 
+# tvm.reporter
+from .reporter import tvm_reporter
+
+tvm_reporter.system_report(publish=True, tags=[__version__])
+
 # tvm.ir
 from .ir import IRModule
 from .ir import transform
@@ -92,6 +97,8 @@ def tvm_wrap_excepthook(exception_hook):
 
     def wrapper(exctype, value, trbk):
         """Clean subprocesses when TVM is interrupted."""
+        tvm_reporter.error_report(error=value, tags=[__version__], publish=True)
+        
         if exctype is error.DiagnosticError and not _should_print_backtrace():
             # TODO(@jroesch): consider moving to C++?
             print("note: run with `TVM_BACKTRACE=1` environment variable to display a backtrace.")

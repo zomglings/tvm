@@ -20,12 +20,16 @@
 TVMC - TVM driver command-line interface
 """
 import argparse
+from distutils.util import strtobool
 import logging
 import sys
+import textwrap
 
 import tvm
+from humbug.report import Report
 
 from tvm.driver.tvmc.common import TVMCException
+from tvm.reporter import tvm_reporter, save_reporting_config
 
 
 REGISTERED_PARSER = []
@@ -63,6 +67,11 @@ def _main(argv):
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase verbosity")
     parser.add_argument("--version", action="store_true", help="print the version and exit")
+    parser.add_argument(
+        "--reporting",
+        choices=["True", "False"],
+        help="enable or disable sending crash reports to TVM",
+    )
 
     subparser = parser.add_subparsers(title="commands")
     for make_subparser in REGISTERED_PARSER:
@@ -76,6 +85,32 @@ def _main(argv):
 
     if args.version:
         sys.stdout.write("%s\n" % tvm.__version__)
+        return 0
+
+    if args.reporting:
+        reporting_notice = textwrap.dedent(
+            """
+            Privacy policy:
+            We collect basic system information and crash reports so that we can keep
+            improving your experience using TVM to work with your data.
+            You can find out more by reading our privacy policy:
+                https://octoml.ai
+            If you would like to opt out of reporting crashes and system information,
+            run the following command:
+                $ tvmc --reporting False
+            """
+        )
+
+        reporting_choice = bool(strtobool(args.reporting))
+        report = Report(
+            title="Consent change",
+            tags=tvm_reporter.system_tags(),
+            content="Consent? `{}`".format(reporting_choice),
+        )
+        tvm_reporter.publish(report)
+        save_reporting_config(reporting_choice)
+
+        sys.stdout.write("%s\n" % reporting_notice)
         return 0
 
     if not hasattr(args, "func"):
