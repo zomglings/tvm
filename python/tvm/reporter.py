@@ -6,8 +6,8 @@ import uuid
 from humbug.consent import HumbugConsent
 from humbug.report import Reporter
 
-HUMBUG_TOKEN = ""
-HUMBUG_KB_ID = ""
+HUMBUG_TOKEN = "3dfd22e9-ceaf-4e66-8a23-b927acac6f7b"
+HUMBUG_KB_ID = "8743e82b-dfd0-4b64-b915-28b1f9316d6a"
 
 tvm_REPORT_CONFIG_FILE_NAME = "reporting_config.json"
 
