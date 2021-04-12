@@ -67,6 +67,7 @@ REQUIREMENTS_BY_PIECE: RequirementsByPieceType = [
                 "attrs",
                 "cloudpickle",
                 "decorator",
+                "humbug",
                 "numpy",
                 "psutil",
                 "scipy",
